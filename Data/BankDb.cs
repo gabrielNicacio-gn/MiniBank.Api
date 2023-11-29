@@ -22,7 +22,15 @@ namespace MiniBank.Api.Data
             modelBuilder.Entity<User>()
                 .HasIndex(prop => prop.Document)
                 .IsUnique();
-
+            modelBuilder.Entity<Transaction>()
+                .HasOne(prop => prop.Sender)
+                .WithMany(pro=>pro.TransactionsSender)
+                .HasForeignKey(prop => prop.SenderId);
+            modelBuilder.Entity<Transaction>()
+                .HasOne(prop => prop.Receiver)
+                .WithMany(pro => pro.TransactionsReceiver)
+                .HasForeignKey(prop=>prop.ReceiverId);
+            
             base.OnModelCreating(modelBuilder);
         }
     }

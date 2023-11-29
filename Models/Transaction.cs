@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MiniBank.Api.Models
 {
@@ -8,12 +9,28 @@ namespace MiniBank.Api.Models
         [Key]
         public Guid Id { get; private init; }
         [Required]
-        public User? Sender { get; set; }
+        public User Sender { get; private set; }
+        public Guid SenderId { get; private set; }
         [Required]
-        public User? Receiver { get; set; }
+        public User Receiver { get; private set; }
+        public Guid ReceiverId { get; private set; }    
         [Required]
-        public decimal Value { get; set; }
+        public decimal Value { get; private set; }
         [Required]
-        public DateTime TransactionDate { get; set; }
+        public DateTime TransactionDate { get; private set; }
+
+        public Transaction()
+        {
+             
+        }
+        public Transaction(User sender, User receiver, decimal value)
+        {
+            Id = Guid.NewGuid();
+            Sender = sender;
+            Receiver = receiver;
+            Value = value;
+            TransactionDate = DateTime.Now;
+        }
+        
     }
 }

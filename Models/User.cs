@@ -28,5 +28,23 @@ namespace MiniBank.Api.Models
         public decimal Balance { get; set; }
         [Required]
         public UserType UserType { get; set; }
+        [Required]
+        public bool IsActivate { get; set; }
+
+        public ICollection<Transaction> TransactionsSender { get; set; }
+        public ICollection<Transaction> TransactionsReceiver {  get; set; }
+
+        public User(string firstName, string lastName, string document, string email, string password, decimal balance, UserType userType )
+        {
+            Id = Guid.NewGuid();
+            FirstName = firstName;
+            LastName = lastName;
+            Document = document;
+            Email = email;
+            Password = password;
+            Balance = balance;
+            UserType = userType;
+        }
+        
     }
 }
