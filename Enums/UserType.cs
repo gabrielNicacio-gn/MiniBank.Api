@@ -1,8 +1,8 @@
-﻿namespace MiniBank.Api.Models
+﻿namespace MiniBank.Api.Enums
 {
     public enum UserType
     {
-        COMMOM,
-        MERCHANT
+        COMMOM = 1,
+        MERCHANT = 2 
     }
 }
