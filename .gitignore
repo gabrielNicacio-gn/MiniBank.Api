@@ -1,0 +1,5 @@
+bin
+obj
+.vs
+MiniBank.Api.csproj.user
+Properties

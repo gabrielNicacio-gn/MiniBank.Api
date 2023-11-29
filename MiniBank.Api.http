@@ -1,0 +1,6 @@
+@MiniBank.Api_HostAddress = http://localhost:5022
+
+GET {{MiniBank.Api_HostAddress}}/miniBank/
+Accept: application/json
+
+###
