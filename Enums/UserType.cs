@@ -2,7 +2,7 @@
 {
     public enum UserType
     {
-        COMMOM = 1,
-        MERCHANT = 2 
+        COMMOM, 
+        MERCHAN  
     }
 }

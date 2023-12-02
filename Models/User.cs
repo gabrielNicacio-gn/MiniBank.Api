@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using MiniBank.Api.Enums;
@@ -8,7 +9,7 @@ namespace MiniBank.Api.Models
     public class User
     {
         [Key]
-        public Guid Id { get; private init; }
+        public Guid Id { get; init; }
 
         [Required]
         [MaxLength(100)]
@@ -18,23 +19,28 @@ namespace MiniBank.Api.Models
         public string? LastName { get; set; }
         [Required]
         [MaxLength(20)]
-        public string? Document { get; set; }
+        public string? Document { get;  set; }
         [Required]
         [MaxLength(50)]
         public string? Email { get; set; }
         [Required]
         [MinLength(8)]
         public string? Password { get; set; }
+        
         public decimal Balance { get; set; }
         [Required]
         public UserType UserType { get; set; }
         [Required]
         public bool IsActivate { get; set; }
 
-        public ICollection<Transaction> TransactionsSender { get; set; }
-        public ICollection<Transaction> TransactionsReceiver {  get; set; }
+        public ICollection<Transaction>? TransactionsSender { get; private set; }
+        public ICollection<Transaction>? TransactionsReceiver { get; private set; }
 
-        public User(string firstName, string lastName, string document, string email, string password, decimal balance, UserType userType )
+        public User()
+        {
+            Balance = 0;
+        }
+        public User(string firstName, string lastName, string document, string email, string password, UserType userType)
         {
             Id = Guid.NewGuid();
             FirstName = firstName;
@@ -42,9 +48,8 @@ namespace MiniBank.Api.Models
             Document = document;
             Email = email;
             Password = password;
-            Balance = balance;
             UserType = userType;
+            IsActivate = true;
         }
-        
     }
 }
