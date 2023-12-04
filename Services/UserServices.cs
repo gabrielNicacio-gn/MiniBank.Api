@@ -18,15 +18,14 @@ namespace MiniBank.Api.Services
             _userRepository = userRepository;
         }
 
-        public void Validation(Guid id, decimal balance)
+        public void ValidationTransaction(User user,decimal value)
         {
-            var user = _userRepository.GetUsersByIdAsync(id);
-
-            if(user.Result.UserType == Enums.UserType.COMMOM) 
-            {
-
-            }
+            if (user.UserType == Enums.UserType.MERCHAN)
+                throw new InvalidOperationException("Esse tipo de usuário não tem autorização para realizar uma transação");
+            if (user.Balance < value) 
+                throw new InvalidOperationException();
         }
+
         public async Task<IQueryable<User>> GetUsersAsync()
         {
             return await _userRepository.GetAllUserAsync();
@@ -40,9 +39,33 @@ namespace MiniBank.Api.Services
                 var userResult = new ResultForUserSearch(userView);
                 return userResult;
             }
-            return new ResultForUserSearch("Usuario não encontrado");
+            var error = new ProblemDetails
+            {
+                Title = "Não Existe",
+                Type = "Registro Inexistente",
+                Detail = "Esse usuário não foi encontrado",
+                Status = (int)HttpStatusCode.NotFound
+            };
+            return new ResultForUserSearch(error);
         }
-
+        public async Task<ResultForUserSearch> GetUserByDocumentAsync(string Document) 
+        {
+            var user = await _userRepository.GetUserByDocument(Document);
+            if(user is not null)
+            {
+                var userView = new OutputDataGetUsers(user.Id,user.FirstName,user.LastName,user.Document,user.Email,user.Balance,user.UserType);
+                var result = new ResultForUserSearch(userView);
+                return result;
+            }
+            var error = new ProblemDetails 
+            {
+                Title = "Não Existe",
+                Type = "Registro Inexistente",
+                Detail = "Esse usuário não foi encontrado",
+                Status = (int)HttpStatusCode.NotFound
+            };
+            return new ResultForUserSearch(error);
+        }
         public async Task<ResultForCreateUsers> CreateUserAsync(DataEntryToCreateUser dataEntry)
         {
             var newUser = new User(dataEntry.FirstName, dataEntry.LastName, dataEntry.Document, dataEntry.Email, dataEntry.Password, dataEntry.TheUserType);
@@ -52,7 +75,46 @@ namespace MiniBank.Api.Services
                 var result = new OutputDataCreateUsers(newUser.Id, newUser.FirstName, newUser.LastName, newUser.Document, newUser.Email, newUser.Balance, newUser.UserType);
                 return new ResultForCreateUsers(result);
             }
-            return new ResultForCreateUsers("Já existe um usuário com esse email ou documento");
+            var error = new ProblemDetails
+            {
+                Title = "Já Existe",
+                Type = "Registro já existente",
+                Detail = "Já existe um usuário com esse email ou documento",
+                Status = (int)HttpStatusCode.BadRequest
+            };
+            return new ResultForCreateUsers(error);
+        }
+        public async Task<ResultForUpdateUsers> UpdateUserAsync(Guid id,DataEntryToUpdateUser dataEntry) 
+        {
+           var sucess = await _userRepository.UpdateUser(id,dataEntry);
+            if (sucess)
+            {
+                return new ResultForUpdateUsers();
+            }
+            var error = new ProblemDetails
+            {
+                Title = "Impossibilidade de atualização",
+                Type = "Falha",
+                Detail = "Não foi possível atualizar os dados",
+                Status = (int)HttpStatusCode.BadRequest
+            };
+            return new ResultForUpdateUsers(error);
+        }
+        public async Task<ResultForDeleteUsers> DeleteUserAsync(Guid id)
+        {
+           var deleteUser = await _userRepository.DeleteUser(id);
+           if (deleteUser)
+           {
+                return new ResultForDeleteUsers();
+           }
+            var error = new ProblemDetails
+            {
+                Title = "Não Encontrado",
+                Type = "Falha",
+                Status = (int)HttpStatusCode.NotFound,
+                Detail = "Este usuário não foi encontrado, logo não pode ser deletado"
+            };
+           return new ResultForDeleteUsers(error);
         }
     }
 }

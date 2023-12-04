@@ -1,4 +1,5 @@
-﻿using MiniBank.Api.ResultsCustomizer.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using MiniBank.Api.ResultsCustomizer.DTOs;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MiniBank.Api.ResultsCostumizer
@@ -7,19 +8,19 @@ namespace MiniBank.Api.ResultsCostumizer
     {
         public bool Sucess { get; private set; }
         public OutputDataCreateUsers? Data { get; private set; }
-        public string? ErrorMessage { get; private set; }
+        public ProblemDetails? Error { get; private set; }
 
         public ResultForCreateUsers(OutputDataCreateUsers data)
         {
             Sucess = true;
             Data = data;
-            ErrorMessage = null;
+            Error = null;
         }
-        public ResultForCreateUsers(string errorMessage)
+        public ResultForCreateUsers(ProblemDetails error)
         {
             Sucess = false;
             Data = null;
-            ErrorMessage = errorMessage;
+            Error = error;
         }
     }
 }

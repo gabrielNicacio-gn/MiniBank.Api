@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.StartUserEndpoints();
-app.StartTransitionEndpoints();
+app.StartTransactionsEndpoints();
 
 app.Run();
 

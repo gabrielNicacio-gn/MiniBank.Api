@@ -15,7 +15,7 @@ namespace MiniBank.Api.Endpoints
     {
         public static void StartUserEndpoints(this WebApplication app)
         {
-            var routeGroup = app.MapGroup("/user");
+            var routeGroup = app.MapGroup("/user").WithTags("Usuários");
 
             routeGroup.MapGet("/Get-All", async (UserServices _services) =>
             {
@@ -31,26 +31,35 @@ namespace MiniBank.Api.Endpoints
                 {
                     return Results.Ok(userCreated.Data);
                 }
-                var problem = new ProblemDetails 
-                {
-                    Title = "Já Existe",
-                    Detail = userCreated.ErrorMessage,
-                    Status = (int)HttpStatusCode.BadRequest,
-                };
-                return Results.BadRequest(problem);
+                return Results.BadRequest(userCreated.Error);
             });
             routeGroup.MapGet("/Get-by-{id}",async(Guid id,UserServices _services) =>
             {
                 var user = await _services.GetUsersByIdAsync(id);
                 if (user.Sucess)
                     return Results.Ok(user.Data);
-                var problem = new ProblemDetails 
-                {
-                    Title = "Não Encontrado",
-                    Detail = user.ErrorMessage,
-                    Status = (int)HttpStatusCode.NotFound,
-                };
-                return Results.NotFound(problem);
+                return Results.NotFound(user.Error);
+            });
+            routeGroup.MapGet("/Get-by-document", async (string document,UserServices _services) =>
+            {
+                var user = await _services.GetUserByDocumentAsync(document);
+                if(user.Sucess)
+                    return Results.Ok(user.Data);
+                return Results.NotFound(user.Error);
+            });
+            routeGroup.MapPut("/Update-user",async(Guid id,DataEntryToUpdateUser dataEntry,UserServices _services) =>
+            {
+                var user = await _services.UpdateUserAsync(id,dataEntry);
+                if (user.Sucess)
+                    return Results.NoContent();
+                return Results.BadRequest(user.Error);
+            });
+            routeGroup.MapDelete("",async (Guid id, UserServices _services) =>
+            {
+                var userDelete = await _services.DeleteUserAsync(id);
+                if (userDelete.Sucess)
+                    return Results.NoContent();
+                return Results.NotFound(userDelete.Error);
             });
 
         }

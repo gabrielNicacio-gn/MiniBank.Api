@@ -51,27 +51,38 @@ namespace MiniBank.Api.Repository
             }
             return false;
         }
-        public async Task UpdateUser(Guid id, DataEntryToUpdateUser dataEntry)
+        public async Task<bool> UpdateUser(Guid id, DataEntryToUpdateUser dataEntry)
         {
             using (var transaction = _bankDb.Database.BeginTransaction())
             {
-                await _bankDb.Users
-                .Where(user => user.Id == id)
-                .ExecuteUpdateAsync(user=>user
-                .SetProperty(prop=>prop.FirstName,dataEntry.FirstName)
+                var affeted = await _bankDb.Users
+                .Where(user => user.Id == id && user.IsActivate)
+                .ExecuteUpdateAsync(user => user
+                .SetProperty(prop => prop.FirstName, dataEntry.FirstName)
                 .SetProperty(prop => prop.LastName, dataEntry.LastName)
                 .SetProperty(prop => prop.Document, dataEntry.Document)
                 .SetProperty(prop => prop.Email, dataEntry.Email)
                 );
+                if(affeted == 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
                 transaction.Commit();
+                return true;
             }
         }
-        public async Task DeleteUser(Guid id) 
+        public async Task<bool> DeleteUser(Guid id) 
         {
-            await _bankDb.Users
+            var affeted = await _bankDb.Users
                 .Where(prop => prop.Id == id && prop.IsActivate)
                 .ExecuteUpdateAsync(user => user
                 .SetProperty(prop=>prop.IsActivate,false));
+            if (affeted == 0)
+            {
+                return false;  
+            }
+            return true;
         }
     }
 }
