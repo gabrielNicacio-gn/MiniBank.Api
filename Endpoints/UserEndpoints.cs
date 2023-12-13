@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using MiniBank.Api.DTOs.UsersDTOs;
+using MiniBank.Api.Errors;
 using MiniBank.Api.Models;
+
 using MiniBank.Api.Services;
-using MiniBank.Api.ViewModel;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MiniBank.Api.Endpoints
@@ -23,23 +25,50 @@ namespace MiniBank.Api.Endpoints
                 return Results.Ok(list);
 
             });
-
-            routeGroup.MapPost("/Create-Users",async (DataEntryToCreateUser dataEntry,UserServices _services) =>
+            
+            routeGroup.MapPost("/Create-Users",async (CreateUserInputModel dataEntry,UserServices _services) =>
             {
-                var userCreated = await _services.CreateUserAsync(dataEntry);
-                if(userCreated.Sucess) 
+                try
                 {
-                    return Results.Ok(userCreated.Data);
+                    var userCreated = await _services.CreateUserAsync(dataEntry);
+                    return Results.Ok(userCreated);
                 }
-                return Results.BadRequest(userCreated.Error);
+                catch (InvalidOperationException ex)
+                {
+                    var erro = new ErrorsResults(ex.Message,HttpStatusCode.Conflict,"Conflit");
+                    return Results.Conflict(erro);
+                }
             });
+
+            routeGroup.MapPost("/deposite", async (Guid id,CreateDepositeInputModel input ,UserServices _services) =>
+            {
+                try
+                {
+                    var create = await _services.CreateDeposite(id,input);
+                    return Results.Ok(create);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    var error = new ErrorsResults(ex.Message, HttpStatusCode.BadRequest, "Bad Request");
+                    return Results.BadRequest(error);
+                }
+            });
+
             routeGroup.MapGet("/Get-by-{id}",async(Guid id,UserServices _services) =>
             {
-                var user = await _services.GetUsersByIdAsync(id);
-                if (user.Sucess)
-                    return Results.Ok(user.Data);
-                return Results.NotFound(user.Error);
+                try
+                {
+                    var user = await _services.GetUsersByIdAsync(id);
+                    var userView = new GetUsersViewModel(user.Id,user.FirstName,user.LastName,user.Document,user.Email,user.Balance,user.UserType);
+                    return Results.Ok(userView);
+                }
+                catch(ArgumentNullException ex)
+                {
+                    var error = new ErrorsResults(ex.Message,HttpStatusCode.BadRequest,"Bad Request");
+                    return Results.BadRequest(error);
+                }
             });
+            /*
             routeGroup.MapGet("/Get-by-document", async (string document,UserServices _services) =>
             {
                 var user = await _services.GetUserByDocumentAsync(document);
@@ -47,21 +76,35 @@ namespace MiniBank.Api.Endpoints
                     return Results.Ok(user.Data);
                 return Results.NotFound(user.Error);
             });
-            routeGroup.MapPut("/Update-user",async(Guid id,DataEntryToUpdateUser dataEntry,UserServices _services) =>
+            */
+            routeGroup.MapPut("/Update-user",async(Guid id,UpdateUserInputModel dataEntry,UserServices _services) =>
             {
-                var user = await _services.UpdateUserAsync(id,dataEntry);
-                if (user.Sucess)
+                try
+                {
+                    await _services.UpdateUserAsync(id, dataEntry);
                     return Results.NoContent();
-                return Results.BadRequest(user.Error);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    var error = new ErrorsResults(ex.Message,HttpStatusCode.BadRequest,"Bad Request");
+                    return Results.BadRequest(error);
+                }
             });
             routeGroup.MapDelete("",async (Guid id, UserServices _services) =>
             {
-                var userDelete = await _services.DeleteUserAsync(id);
-                if (userDelete.Sucess)
+                try
+                {
+                    await _services.DeleteUserAsync(id);
                     return Results.NoContent();
-                return Results.NotFound(userDelete.Error);
-            });
 
+                }
+                catch(InvalidOperationException ex)
+                {
+                    var error = new ErrorsResults(ex.Message, HttpStatusCode.BadRequest, "Bad Request");
+                    return Results.BadRequest(error);
+                }
+            });
+            
         }
     }
 }

@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<BankDb>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<TransactionRepository>();
+builder.Services.AddScoped<TransactionServices>();
 var app = builder.Build();
 
 

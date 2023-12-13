@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite.Migrations.Internal;
-using Microsoft.VisualBasic;
 using MiniBank.Api.Data;
+using MiniBank.Api.DTOs.UsersDTOs;
 using MiniBank.Api.Models;
-using MiniBank.Api.ViewModel;
 using System.Data;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
+
 
 namespace MiniBank.Api.Repository
 {
@@ -18,7 +15,12 @@ namespace MiniBank.Api.Repository
         {
             _bankDb = bankDb;
         }
-
+        public async Task UpdateBalance(Guid id, decimal value)
+        {
+            await _bankDb.Users.Where(prop => prop.Id == id && prop.IsActivate)
+            .ExecuteUpdateAsync(user => user
+            .SetProperty(prop => prop.Balance, value));
+        }
         public async Task<IQueryable<User>> GetAllUserAsync()
         {
             var list = await _bankDb.Users
@@ -42,16 +44,28 @@ namespace MiniBank.Api.Repository
         }
         public async Task<bool> CreateUser(User newUser)
         {
-            var exist = await _bankDb.Users.AnyAsync(userExist=>userExist.Email == newUser.Email && userExist.Document == newUser.Document);
+           var exist = await _bankDb.Users.AnyAsync(user=>user.Email == newUser.Email && user.Document == newUser.Document);
             if (!exist)
             {
-                await _bankDb.Users.AddAsync(newUser);
+                await _bankDb.AddAsync(newUser);
                 await _bankDb.SaveChangesAsync();
                 return true;
             }
             return false;
         }
-        public async Task<bool> UpdateUser(Guid id, DataEntryToUpdateUser dataEntry)
+        public async Task<bool> CreateDeposite(Guid id,CreateDepositeInputModel input)
+        {
+            var affeted = await _bankDb.Users
+                .Where(user => user.Id == id && user.IsActivate)
+                .ExecuteUpdateAsync(user => user
+                .SetProperty(prop => prop.Balance,prop=>prop.Balance + input.value));
+            if (affeted == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        public async Task<bool> UpdateUser(Guid id, UpdateUserInputModel dataEntry)
         {
             using (var transaction = _bankDb.Database.BeginTransaction())
             {
@@ -72,6 +86,7 @@ namespace MiniBank.Api.Repository
                 return true;
             }
         }
+        
         public async Task<bool> DeleteUser(Guid id) 
         {
             var affeted = await _bankDb.Users
