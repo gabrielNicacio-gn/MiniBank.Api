@@ -11,13 +11,9 @@ namespace MiniBank.Api.Endpoints
         public static void StartTransactionsEndpoints(this WebApplication app)
         {
             var routeGroup = app.MapGroup("/user").WithTags("Transações");
-            routeGroup.MapGet("",()=> "Hello");
-
+            
             routeGroup.MapPost("/transação",async (CreateTransactionInputModel data,TransactionServices _services)=> 
             {
-                // var transaction = await _services.CreateTransaction(data);
-                // return transaction;
-
                 try 
                 { 
                    var transaction =  await _services.CreateTransaction(data);
