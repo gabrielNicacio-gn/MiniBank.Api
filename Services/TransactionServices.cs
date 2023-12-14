@@ -2,10 +2,7 @@
 using MiniBank.Api.Models;
 using MiniBank.Api.Repository;
 using MiniBank.Api.DTOs.TransactionsDTOs;
-using System.Net;
-using System.Transactions;
 using Transaction = MiniBank.Api.Models.Transaction;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MiniBank.Api.Services
 {

@@ -68,15 +68,22 @@ namespace MiniBank.Api.Endpoints
                     return Results.BadRequest(error);
                 }
             });
-            /*
+            
             routeGroup.MapGet("/Get-by-document", async (string document,UserServices _services) =>
             {
-                var user = await _services.GetUserByDocumentAsync(document);
-                if(user.Sucess)
-                    return Results.Ok(user.Data);
-                return Results.NotFound(user.Error);
+                try
+                {
+                    var user = await _services.GetUserByDocumentAsync(document);
+                    var userView = new GetUsersViewModel(user.Id, user.FirstName, user.LastName, user.Document, user.Email, user.Balance, user.UserType);
+                    return Results.Ok(userView);
+                }
+                catch (ArgumentNullException ex)
+                {
+                    var error = new ErrorsResults(ex.Message, HttpStatusCode.BadRequest, "Bad Request");
+                    return Results.BadRequest(error);
+                }
             });
-            */
+            
             routeGroup.MapPut("/Update-user",async(Guid id,UpdateUserInputModel dataEntry,UserServices _services) =>
             {
                 try

@@ -55,21 +55,17 @@ namespace MiniBank.Api.Services
             }
             throw new ArgumentNullException("Esse Id não corresponde a nenhum usuário existente");
         }
-       /*
-        public async Task<ResultForUserSearch> GetUserByDocumentAsync(string Document) 
+       
+        public async Task<User?> GetUserByDocumentAsync(string Document) 
         {
             var user = await _userRepository.GetUserByDocument(Document);
             if(user is not null)
             {
-                var userView = new GetUsersViewModel(user.Id,user.FirstName,user.LastName,user.Document,user.Email,user.Balance,user.UserType);
-                var result = new ResultForUserSearch(userView);
-                return result;
+                return user;
             }
-            var errors = "O Documento indicado, não corresponde a nenhum usuário";
-            var error = new ErrorsResults(errors, HttpStatusCode.NotFound, "Erro na busca");
-            return new ResultForUserSearch(error);
+            throw new ArgumentNullException("Esse Documento não corresponde a nenhum usuário existente");
         }
-       */
+       
         public async Task<CreateUsersViewModel> CreateUserAsync(CreateUserInputModel dataEntry)
         {
             var newUser = new User(dataEntry.FirstName, dataEntry.LastName, dataEntry.Document, dataEntry.Email, dataEntry.Password, dataEntry.TheUserType);
