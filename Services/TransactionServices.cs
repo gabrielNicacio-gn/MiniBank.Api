@@ -32,6 +32,33 @@ namespace MiniBank.Api.Services
                 return output;
             }
             throw new ArgumentNullException("Esse(s) usuário(s) não existem");
-        } 
+        }
+        public async Task<IQueryable<GetTransactionViewModel>> GetTransactionsByUser(Guid id)
+        {
+            var transactions = await _transactionRepository.SearchTransactionsReceivedByAUser(id);
+            var transactionView = new List<GetTransactionViewModel>();
+            foreach (var transaction in transactions)
+            {
+                User? userSender = await _userServices.GetUsersByIdAsync(transaction.SenderId);
+                User? userReceiver = await _userServices.GetUsersByIdAsync(transaction.ReceiverId);
+                if (userSender is not null && userReceiver is not null)
+                {
+
+                   var transactionViewModel = new GetTransactionViewModel
+                    (
+                        transaction.Id,
+                        transaction.SenderId,
+                        userSender.FirstName + " " + userSender.LastName,
+                        transaction.ReceiverId,
+                        userReceiver.FirstName + " " + userReceiver.LastName,
+                        transaction.Value,
+                        transaction.TransactionDate
+                     );
+                    transactionView.Add( transactionViewModel);
+                }
+                
+            }
+            return transactionView.AsQueryable();
+        }
     }
 }
