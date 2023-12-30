@@ -28,7 +28,7 @@ namespace MiniBank.Api.Services
                 await _transactionRepository.CreateTransaction(transaction);
                 await _userServices.UpdateBalance(userSender, userReceiver, createTransaction.Value);
 
-                var output = new CreateTransactionViewModel(transaction.Id, transaction.SenderId, userSender.FirstName + userSender.LastName, transaction.ReceiverId, userReceiver.FirstName + " " + userReceiver.LastName, transaction.Value, transaction.TransactionDate);
+                var output = new CreateTransactionViewModel(transaction.Id, transaction.SenderId, userSender.FirstName + userSender.LastName, transaction.ReceiverId, userReceiver.FirstName + " " + userReceiver.LastName, transaction.Value, transaction.TransactionDate.ToString("T"),transaction.TransactionDate.ToString("d"));
                 return output;
             }
             throw new ArgumentNullException("Esse(s) usuário(s) não existem");
@@ -52,7 +52,8 @@ namespace MiniBank.Api.Services
                         transaction.ReceiverId,
                         userReceiver.FirstName + " " + userReceiver.LastName,
                         transaction.Value,
-                        transaction.TransactionDate
+                        transaction.TransactionDate.ToString("T"),
+                        transaction.TransactionDate.ToString("d")
                      );
                     transactionView.Add( transactionViewModel);
                 }

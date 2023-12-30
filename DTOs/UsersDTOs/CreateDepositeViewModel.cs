@@ -4,13 +4,16 @@
     {
         public Guid Id { get; set; }
         public decimal Value { get; set; }
-        public DateTime HourDeposite { get; set; }
+        public DateTime HourOfDeposite { get; set; }
 
-        public CreateDepositeViewModel(Guid id,decimal value)
+        public CreateDepositeViewModel()
+        {
+            HourOfDeposite = DateTime.Now; 
+        }
+        public CreateDepositeViewModel(Guid id, decimal value)
         {
             Id = id;
             Value = value;
-            HourDeposite = DateTime.Now;
         }
     }
 }
