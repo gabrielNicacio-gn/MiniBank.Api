@@ -53,18 +53,7 @@ namespace MiniBank.Api.Repository
             }
             return false;
         }
-        public async Task<bool> CreateDeposite(Guid id,CreateDepositeInputModel input)
-        {
-            var affeted = await _bankDb.Users
-                .Where(user => user.Id == id && user.IsActivate)
-                .ExecuteUpdateAsync(user => user
-                .SetProperty(prop => prop.Balance,prop=>prop.Balance + input.value));
-            if (affeted == 0)
-            {
-                return false;
-            }
-            return true;
-        }
+  
         public async Task<bool> UpdateUser(Guid id, UpdateUserInputModel dataEntry)
         {
             using (var transaction = _bankDb.Database.BeginTransaction())

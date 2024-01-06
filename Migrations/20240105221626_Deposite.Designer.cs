@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniBank.Api.Data;
 
@@ -10,9 +11,11 @@ using MiniBank.Api.Data;
 namespace MiniBank.Api.Migrations
 {
     [DbContext(typeof(BankDb))]
-    partial class BankDbModelSnapshot : ModelSnapshot
+    [Migration("20240105221626_Deposite")]
+    partial class Deposite
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");

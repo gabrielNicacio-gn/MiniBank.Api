@@ -7,6 +7,7 @@ namespace MiniBank.Api.Data
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Deposite> Deposites { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,6 +31,10 @@ namespace MiniBank.Api.Data
                 .HasOne(prop => prop.Receiver)
                 .WithMany(pro => pro.TransactionsReceiver)
                 .HasForeignKey(prop=>prop.ReceiverId);
+            modelBuilder.Entity<Deposite>()
+                .HasOne(prop => prop.Depositor)
+                .WithMany(prop => prop.DepositeOfUser)
+                .HasForeignKey(prop => prop.UserId);
             
             base.OnModelCreating(modelBuilder);
         }

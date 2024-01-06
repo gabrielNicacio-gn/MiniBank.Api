@@ -12,7 +12,7 @@ namespace MiniBank.Api.Endpoints
         {
             var routeGroup = app.MapGroup("/user").WithTags("Transações");
 
-            routeGroup.MapGet("/trasações-por-usuário", async (Guid id,  TransactionServices _services) => 
+            routeGroup.MapGet("/{id}/trasações-por-usuário", async (Guid id,  TransactionServices _services) => 
             {
                 var transactions = await _services.GetTransactionsByUser(id);
                 return Results.Ok(transactions);

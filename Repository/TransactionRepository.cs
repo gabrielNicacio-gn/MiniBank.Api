@@ -24,7 +24,7 @@ namespace MiniBank.Api.Repository
         {
            var transactions = await _bankDb.Transactions
                              .Where(x => x.ReceiverId == id || x.SenderId == id)
-                             .OrderByDescending(x => x.TransactionDate)
+                             .OrderByDescending(x => x.TransactionDateAndTime)
                              .ToListAsync();
            return transactions.AsQueryable();
         }   

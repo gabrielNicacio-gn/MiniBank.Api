@@ -2,5 +2,5 @@
 
 namespace MiniBank.Api.DTOs
 {
-     public record GetTransactionViewModel(Guid? Id, Guid IdSender, string? NameSender, Guid IdReceiver, string NameReceiver, decimal Value, string HourOfTransaction, string DateOfTransaction);
+     public record GetTransactionViewModel(Guid? IdTransaction, Guid IdSender, string? NameSender, Guid IdReceiver, string NameReceiver, decimal Value, string HourOfTransaction, string DateOfTransaction);
 }

@@ -40,20 +40,6 @@ namespace MiniBank.Api.Endpoints
                 }
             });
 
-            routeGroup.MapPost("/deposite", async (Guid id,CreateDepositeInputModel input ,UserServices _services) =>
-            {
-                try
-                {
-                    var create = await _services.CreateDeposite(id,input);
-                    return Results.Ok(create);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    var error = new ErrorsResults(ex.Message, HttpStatusCode.BadRequest, "Bad Request");
-                    return Results.BadRequest(error);
-                }
-            });
-
             routeGroup.MapGet("/Get-by-{id}",async(Guid id,UserServices _services) =>
             {
                 try

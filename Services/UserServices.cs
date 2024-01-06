@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.VisualBasic;
+﻿
 using MiniBank.Api.DTOs.UsersDTOs;
 using MiniBank.Api.Models;
 using MiniBank.Api.Repository;
-using System.Net;
 
 namespace MiniBank.Api.Services
 {
@@ -23,25 +19,17 @@ namespace MiniBank.Api.Services
             if (userSender.Balance < value)
                 throw new InvalidOperationException("Valor excede ao valor de saldo do usuário");
         }
-        public async Task UpdateBalance(User userSender,User userReceiver, decimal value)
+        public async Task IncreaseBalance(User user, decimal value)
         {
-            var balanceUserSender = userSender.Balance -= value;
-            var balanceUserReceiver = userReceiver.Balance += value;
-
-            await _userRepository.UpdateBalance(userSender.Id, balanceUserSender);
-            await _userRepository.UpdateBalance(userReceiver.Id, balanceUserReceiver);
+            var balanceUser = user.Balance += value;
+            await _userRepository.UpdateBalance(user.Id, balanceUser);
+        }
+        public async Task DecreaseBalance(User user, decimal value)
+        {
+            var balanceUser = user.Balance -= value;
+            await _userRepository.UpdateBalance(user.Id, balanceUser);
         }
 
-        public async Task<CreateDepositeViewModel> CreateDeposite(Guid id,CreateDepositeInputModel input)
-        {
-            var deposite = await _userRepository.CreateDeposite(id,input);
-            if (deposite)
-            {
-                var result = new CreateDepositeViewModel(id,input.value);
-                return result;
-            }
-            throw new InvalidOperationException("Não foi possível fazer o depósito");
-        }
         public async Task<IQueryable<User>> GetUsersAsync()
         {
             return await _userRepository.GetAllUserAsync();

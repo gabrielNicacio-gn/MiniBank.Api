@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using MiniBank.Api.Enums;
 
@@ -10,7 +9,6 @@ namespace MiniBank.Api.Models
     {
         [Key]
         public Guid Id { get; init; }
-
         [Required]
         [MaxLength(100)]
         public string? FirstName { get; set; }
@@ -35,11 +33,8 @@ namespace MiniBank.Api.Models
 
         public ICollection<Transaction>? TransactionsSender { get; private set; }
         public ICollection<Transaction>? TransactionsReceiver { get; private set; }
+        public ICollection<Deposite>? DepositeOfUser { get; private set; }
 
-        public User()
-        {
-            Balance = 0;
-        }
         public User(string firstName, string lastName, string document, string email, string password, UserType userType)
         {
             Id = Guid.NewGuid();

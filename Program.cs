@@ -14,6 +14,8 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<TransactionRepository>();
 builder.Services.AddScoped<TransactionServices>();
+builder.Services.AddScoped<DepositeRepository>();
+builder.Services.AddScoped<DepositeServices>();
 var app = builder.Build();
 
 
@@ -26,6 +28,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.StartUserEndpoints();
 app.StartTransactionsEndpoints();
+app.StartDepositeEndpoints();
 
 app.Run();
 
